@@ -2,9 +2,12 @@
 
 This project demonstrates a role based escrow contract. It comes with hardhat, a test for that contract, a sample script that deploys that contract.
 
-You need to have 3 accounts configured in your Metamask wallets to be used as Agent, Sender, Receiver as per the logic of Escrow service. You need to switch accounts while performing the escrow action based on the logic below 
+You need to have 3 accounts configured in your Metamask wallets to be used as Agent, Sender, Receiver as per the logic of Escrow service. You need to switch accounts while performing the escrow action based on the logic below.
+
 Sender - (Send Payment, Confirm Delivery, Deny Delivery)
+
 Receiver - (Claim Payment)
+
 Agent - (Agent Transfer)
 
 ## Backend
