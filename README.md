@@ -29,7 +29,7 @@ npx hardhat run --network moonbase scripts/deploy.js
 ```
 
 ## Frontend
-### Intracting with escrow contract
+### Interacting with escrow contract
 This project was bootstrapped with React App
 
 
