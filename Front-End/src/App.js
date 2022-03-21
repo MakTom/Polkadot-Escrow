@@ -7,9 +7,8 @@ import Button from "react-bootstrap/Button";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 function configureContract() {
-    const escrowAddress = "0x7356eBD9ae9b6FaFBF96B1F7AB97007e64daAC97";
+    const escrowAddress = "0x5bbA5C889aDCb9EF928F18f8298c4FE935F32aba";
     if (!window.ethereum) {
         throw new Error("No crypto wallet found. Please install it.");
     }
@@ -27,7 +26,7 @@ export default function App() {
     const [disableDenyDelivery, setdisableDenyDelivery] = React.useState(true);
     const [disableAgentTransfer, setdisableAgentTransfer] = React.useState(true);
     const [vaultBalance, setvaultBalance] = React.useState();
-    const [ethValue, setEthValue] = React.useState(60);
+    const [ethValue, setEthValue] = React.useState();
     const [isloading, setIsLoading] = React.useState(false);
     const [timer, setTimer] = React.useState();
     const id = React.useRef(null);
@@ -76,76 +75,105 @@ export default function App() {
         );
     }, []);
 
+
     const handleSendPayment = async (e) => {
         e.preventDefault();
-       
         const contract = configureContract();
-        const myPromise = new Promise((resolve, reject) => {
-            resolve(contract.SendPayment({ value: ethValue }));
-        });
-        myPromise.then(async () => {
+        alert("Transaction is submitted, Please wait for it be mined");
+        setIsLoading(true);
+        const tx = await contract.SendPayment({ value: ethValue});
+        tx.wait().then(async()=>{
+            console.log("Done");
+            console.log(tx);
             setdisableClaimPayment(false);
             setdisableSendPayment(true);
-            alert("Transaction is submitted, Please wait for it be mined");
-        });
-        myPromise.catch((error) =>{
+            setvaultBalance(Number(ethers.BigNumber.from(await contract.balance()).toString()));
+            setEthValue(0);
+            setIsLoading(false);
+        }).catch((error) =>{
             alert(error.data.message);
+            setEthValue(0);
+            setIsLoading(false);
         });
-    };
+     }
 
     const handleClaimPayment = async (e) => {
         e.preventDefault();
-      
         const contract = configureContract();
-        contract.ClaimPayment().then((res) =>{
-            console.log(res);
+        alert("Transaction is submitted, Please wait for it be mined");
+        setIsLoading(true);
+        const tx = await contract.ClaimPayment();
+        console.log(tx);
+        tx.wait().then(async () =>{
+            console.log(tx);
+            console.log("handleClaimPayment");
             setdisableClaimPayment(true);
             setdisableConfirmDeliver(false);
             setdisableDenyDelivery(false);
-            alert("Transaction is submitted, Please wait for it be mined");
+            setIsLoading(false);
         })
         .catch((error) =>{
             alert(error.data.message);
+            setIsLoading(false);
         });
         
     };
 
     const handleConfirmDeliver = async (e) => {
         e.preventDefault();
-    
         const contract = configureContract();
-        contract.ConfirmDeliver().then(() =>{
+        alert("Transaction is submitted, Please wait for it be mined");
+        setIsLoading(true);
+        const tx = await contract.ConfirmDeliver();
+       
+        tx.wait().then(() =>{
             setdisableConfirmDeliver(true);
             setdisableDenyDelivery(true);
             setdisableAgentTransfer(false);
-            alert("Transaction is submitted, Please wait for it be mined");
+            setIsLoading(false);
         })
         .catch((error) =>{
             alert(error.data.message);
+            setIsLoading(false);
         });
     };
 
     const handleDenyDeliver = async (e) => {
         e.preventDefault();
         const contract = configureContract();
-        contract.DenyDeliver().then((res) =>{
-            console.log(res);
+        alert("Transaction is submitted, Please wait for it be mined");
+        setIsLoading(true);
+        const tx = await contract.DenyDeliver();
+        
+        tx.wait().then(() =>{
             setdisableConfirmDeliver(true);
             setdisableDenyDelivery(true);
-            setdisableAgentTransfer(false);
-            alert("Transaction is submitted, Please wait for it be mined");
+            setdisableAgentTransfer(false); 
+            setIsLoading(false);
         })
         .catch((error) =>{
             alert(error.data.message);
+            setIsLoading(false);
         });
     };
 
     const handleAgentTransfer = async (e) => {
         e.preventDefault();
         const contract = configureContract();
-        await contract.AgentTransfer();   
         alert("Transaction is submitted, Please wait for it be mined");
-        //setvaultBalance(Number(ethers.BigNumber.from(await contract.balance()).toString()));
+        setIsLoading(true);
+        const tx = await contract.AgentTransfer();  
+        tx.wait().then(async () =>{
+            setdisableAgentTransfer(true); 
+            setvaultBalance(Number(ethers.BigNumber.from(await contract.balance()).toString()));
+            setIsLoading(false);
+
+        })
+        .catch((error) =>{
+            alert(error.data.message);
+            setIsLoading(false);
+        });
+        
       }
 
     const handleStatus = async (e) => {
@@ -160,13 +188,21 @@ export default function App() {
     };
 
     return (
-        <div className="mx-auto" style={{"width": "200px"}}>            
+        <div className="mx-auto" style={{"width": "200px"}}>     
+            {isloading &&
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>   
+            }
+            
+            <div disabled = {isloading}>   
                 <div className="pad" >Time left : {timer} </div>
                 <div className="pad" >Vault Balance: {vaultBalance}</div>
                 <input
                     className="pad" 
                     id="ethValue"
                     type="text"
+                    value = {ethValue}
                     label="Deposit Amount"
                     onChange={(event) => setEthValue(event.target.value)}
                 />
@@ -176,6 +212,7 @@ export default function App() {
                 <Button className="pad"  variant="dark" onClick={handleDenyDeliver} disabled= {disableDenyDelivery}> Deny Deliver</Button>
                 <Button className="pad"  variant="dark" onClick={handleAgentTransfer} disabled= {disableAgentTransfer}> Agent Transfer</Button>
                 <Button className="pad"  variant="dark" onClick={handleStatus}> Get Status</Button>
+            </div> 
         </div>
     );
 }

@@ -4,8 +4,6 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
- 
-
 contract EscrowService is AccessControl { //Ownable,
 
     bytes32 public constant AGENT_ROLE = keccak256("AGENT_ROLE");
@@ -39,7 +37,7 @@ contract EscrowService is AccessControl { //Ownable,
         lockTime = _lockTime; // in seconds
         receiver= _receiver_address;
         price = _price;
-        fee = 1;
+        fee = 10000;
         start = block.timestamp;
         balance = 0;
 
@@ -53,13 +51,12 @@ contract EscrowService is AccessControl { //Ownable,
     }
 
     function SendPayment() external payable onlyRole(SENDER_ROLE) {
-        require (msg.value > fee, "Escrow Agent fee of 1 Ether must be covered!");
-        require (msg.value >= price, "Sender should pay at least the minimal price for the products or services.");
+        require (msg.value >= fee + price, "Escrow Agent fee of 10000 wei and price of 100000 wei must be covered!");
         require (status == Status.REGISTER, "This should be the first stage of the negociation!");
         payable(agent).transfer(fee);
         uint256 new_price = price - fee;
         payable(vault).transfer(new_price);
-        balance += msg.value;
+        balance += new_price;
         status = Status.DEPOSITED; // payment submitted to vault
     }
 

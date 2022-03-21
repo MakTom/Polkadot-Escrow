@@ -1,6 +1,11 @@
 # Escrow Contract Project
 
-This project demonstrates a role based escrow contract. It comes with hardhat, a test for that contract, a sample script that deploys that contract
+This project demonstrates a role based escrow contract. It comes with hardhat, a test for that contract, a sample script that deploys that contract.
+
+You need to have 3 accounts configured in your Metamask wallets to be used as Agent, Sender, Receiver as per the logic of Escrow service. You need to switch accounts while performing the escrow action based on the logic below 
+Sender - (Send Payment, Confirm Delivery, Deny Delivery)
+Receiver - (Claim Payment)
+Agent - (Agent Transfer)
 
 ## Backend
 - to install required modules:
@@ -11,13 +16,12 @@ npm install
 ```shell
 npx hardhat compile
 ```
-![Compile]( https://i.postimg.cc/W1cxZ0rk/Compile2.jpg)
+
 
 - to deploy contract in moonbase:
 ```shell
 npx hardhat run --network moonbase scripts/deploy.js
 ```
-
 
 ## Frontend
 ### Intracting with escrow contract
