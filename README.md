@@ -10,7 +10,7 @@ Receiver - (Claim Payment)
 
 Agent - (Agent Transfer)
 
-You can modify the deply script to provide Sender, Receiver address, price and the lock period.
+You can modify the deploy script to provide Sender, Receiver address, price and the lock period.
 
 ## Backend
 - to install required modules:
