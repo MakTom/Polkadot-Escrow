@@ -10,6 +10,8 @@ Receiver - (Claim Payment)
 
 Agent - (Agent Transfer)
 
+You can modify the deply script to provide Sender, Receiver address, price and the lock period.
+
 ## Backend
 - to install required modules:
 ```shell
@@ -35,6 +37,8 @@ This project was bootstrapped with React App
 ```shell
 npm install
 ```
+Also make sure the update the address of the deployed contract in the App.js file.
+
 - to run:
 ```shell
 npm start
