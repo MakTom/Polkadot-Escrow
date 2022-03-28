@@ -8,7 +8,7 @@ import Button from "react-bootstrap/Button";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function configureContract() {
-    const escrowAddress = "0x5bbA5C889aDCb9EF928F18f8298c4FE935F32aba";
+    const escrowAddress = "0x81ED9fFBcD032eE2D94b520B090A4e9be8039271";
     if (!window.ethereum) {
         throw new Error("No crypto wallet found. Please install it.");
     }
