@@ -1,14 +1,13 @@
 import React from "react";
 import './App.css';
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import abi from "./artifacts/contracts/EscrowService.sol/EscrowService.json";
-import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function configureContract() {
-    const escrowAddress = "0x81ED9fFBcD032eE2D94b520B090A4e9be8039271";
+    const escrowAddress = "0x3E2B9B6F1c0952Cf5E4E45fBF63f00f54A563215";
     if (!window.ethereum) {
         throw new Error("No crypto wallet found. Please install it.");
     }
@@ -26,7 +25,7 @@ export default function App() {
     const [disableDenyDelivery, setdisableDenyDelivery] = React.useState(true);
     const [disableAgentTransfer, setdisableAgentTransfer] = React.useState(true);
     const [vaultBalance, setvaultBalance] = React.useState();
-    const [ethValue, setEthValue] = React.useState();
+    const [ethValue, setEthValue] = React.useState(0);
     const [isloading, setIsLoading] = React.useState(false);
     const [timer, setTimer] = React.useState();
     const id = React.useRef(null);
@@ -47,6 +46,37 @@ export default function App() {
         }
         if(timer <= 0){
             setdisableSendPayment(true);
+            const contract = configureContract();
+            contract.status().then((currentStatus) =>{
+                console.log(currentStatus);
+                if(currentStatus > 1){
+                    if(currentStatus === 2){
+                        setdisableClaimPayment(true);
+                        setdisableConfirmDeliver(false);
+                        setdisableDenyDelivery(false);
+                        setIsLoading(false);
+                    } else if (currentStatus === 3){
+                        setdisableConfirmDeliver(true);
+                        setdisableDenyDelivery(true);
+                        setdisableAgentTransfer(false);
+                        setIsLoading(false);
+                    }
+                    else if (currentStatus === 4){
+                        setdisableConfirmDeliver(true);
+                        setdisableDenyDelivery(true);
+                        setdisableAgentTransfer(false); 
+                        setIsLoading(false);
+                    }
+                }
+                else{
+                    alert("Time has lapsed to send or claim payment, you will need to redeploy the contract");
+                    clear();
+                }
+            })
+            .catch((error) =>{
+                alert(error.data.message);
+            });
+            
         }
             
     }, [timer]);
